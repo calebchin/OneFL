@@ -102,7 +102,7 @@ class FedISCA:
       param_group['lr'] = self.glb_lr * lr_dec
     
     
-  def load_models(self, base_model=None):
+  def load_models(self, base_models=[]):
     """
     Returns an ensemble of the stored models for federation
 
@@ -111,16 +111,16 @@ class FedISCA:
       Base model load weights into, initialized with num_classes and in_channels
     """
     models = []
-    for loc_dir in sorted(os.listdir(self.models_dir)):
+    for i, loc_dir in enumerate(sorted(os.listdir(self.models_dir))):
       weight_path = os.path.join(self.models_dir, loc_dir, 'best.pth')
       model_weights = torch.load(weight_path, weights_only=True)
       # in the future, there will be different models, but for now, we retrieve a single model type
       # base_mod = ResNet18(in_channels=self.in_channels, num_classes=self.num_classes)
-      if base_model is None:
+      if len(base_models) == []:
         base_mod = ResNet18(in_channels=self.in_channels, num_classes=self.num_classes)
         base_mod.load_state_dict(model_weights)
       else:
-        base_mod = base_model
+        base_mod = base_models[i]
         base_mod.load_state_dict(model_weights)
       base_mod.to(self.device)
 
